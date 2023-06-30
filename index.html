@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nobel Prize Data Viz</title>
+    <style>
+        #intro {
+            font-size: 20px;
+            padding: 100px 10%;
+        }
+        #container {
+            padding: 0 10%;
+        }
+    </style>
+</head>
+<body>
+    <div id="intro">
+    <h1>Nobel Prizes</h1>
+    <p>The Nobel Prize is an international award administered by the Nobel Foundation in Stockholm, Sweden. Between 1901 and 2022, the Nobel Prize was awarded 615 times to 989 individuals and organizations. An individual or organization awarded the Nobel Prize is called a Nobel Prize laureate.</p>
+    </div>
+    <div id="container"></div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/annotations.js"></script>
+    <script>
+        const url = "https://api.nobelprize.org/v1/prize.json";
+
+        // async function logJSONData() {
+        //     const response = await fetch(url);
+        //     const jsonData = await response.json();
+        // }
+
+
+        // logJSONData();
+
+
+
+(async () => {
+ const values = [];
+     const response = await fetch(url);
+     const jsonData = await response.json();
+
+
+
+        const chemistryData = [];
+        const economicsData = [];
+        const economicsFiller = [];
+        const literatureData = [];
+        const peaceData = [];
+        const physicsData = [];
+        const medicineData = [];
+
+        // economics didn't start awarding until 1969
+
+        for(let i = 0; i < 68; i++) {
+            economicsFiller.push(null);
+        }
+
+       
+            jsonData.prizes.forEach(winner => console.log(winner))
+            // console.log(data.prizes) 664
+            jsonData.prizes.forEach(winner => {
+
+                switch(winner.category) {
+                    case "chemistry":
+                        if(winner.laureates) {
+                            chemistryData.unshift(winner.laureates.length);
+                        } else {
+                            chemistryData.unshift(null);
+                        }
+                        break;
+
+                    case "economics":
+                        if(winner.laureates) {
+                            economicsData.unshift(winner.laureates.length);
+                        } else {
+                            economicsData.unshift(null);
+                        }
+                        break;
+
+                    case "literature":
+                        if(winner.laureates) {
+                            literatureData.unshift(winner.laureates.length);
+                        } else {
+                            literatureData.unshift(null);
+                        }
+                        break;
+
+                    case "peace":
+                        if(winner.laureates) {
+                            peaceData.unshift(winner.laureates.length);
+                        } else {
+                            peaceData.unshift(null);
+                        }
+                        break;
+
+                    case "physics":
+                        if(winner.laureates) {
+                            physicsData.unshift(winner.laureates.length);
+                        } else {
+                            physicsData.unshift(null);
+                        }
+                        break;
+
+                    case "medicine":
+                        if(winner.laureates) {
+                            medicineData.unshift(winner.laureates.length);
+                        } else {
+                            medicineData.unshift(null);
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
+            })
+     
+
+
+    Highcharts.chart('container', {
+    chart: {
+        type: 'column'
+    },
+    title: {
+        useHTML: true,
+        text: 'Nobel Prize Winners, 1901 to 2022',
+        align: 'left'
+    },
+    subtitle: {
+        text: 'Source: ' +
+            '<a href="https://www.nobelprize.org/about/developer-zone-2/"' +
+            'target="_blank">nobelprize.org</a>',
+        align: 'left'
+    },
+    accessibility: {
+        point: {
+            valueDescriptionFormat: '{index}. {point.category}, {point.y} .'
+        }
+    },
+    yAxis: {
+        labels: {
+            format: '{value}'
+        },
+        title: {
+            enabled: false
+        }
+    },
+    tooltip: {
+        pointFormat: '<span style="color:{series.color}">{series.name}</span>: {point.y} laureates',
+        split: true
+    },
+    plotOptions: {
+        series: {
+            pointStart: 1901
+        },
+        column: {
+            stacking: 'normal',
+            dataLabels: {
+                enabled: false
+            }
+        }
+    },
+    series: [{
+        name: 'Chemistry',
+        data: chemistryData
+    }, {
+        name: 'Economics',
+        data: [...economicsFiller, ...economicsData]
+    }, {
+        name: 'Literature',
+        data: literatureData
+    }, {
+        name: 'Peace',
+        data: peaceData
+    }, {
+        name: 'Physics',
+        data: physicsData
+    }, {
+        name: 'Medicine',
+        data: medicineData
+    }],
+        annotations: [{
+        labels: [{
+            point: 'max',
+            text: 'Max'
+        }, {
+            point: 'min',
+            text: 'Min',
+            backgroundColor: 'white'
+        }]
+    }],
+
+    annotations: [{
+        draggable: '',
+        labelOptions: {
+                        shape: 'connector',
+            align: 'right',
+            justify: false,
+            crop: true,
+            style: {
+                fontSize: '10px',
+            }
+        },
+        labels: [{
+            point: {
+                xAxis: 0,
+                yAxis: 0,
+                x: 1941,
+                y: 6
+            },
+            text: 'No Nobel Prize was awarded 1940-1942'
+        }, {
+            point: {
+                xAxis: 0,
+                yAxis: 0,
+                x: 1969,
+                y: 11
+            },
+            text: 'Prizes in economics started in 1969'
+        }]
+    }]
+});
+})();
+
+
+
+    </script>
+</body>
+</html>
